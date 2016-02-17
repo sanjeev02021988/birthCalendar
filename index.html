@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Birthday Cal</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400,300|Source+Code+Pro' rel='stylesheet'
+          type='text/css'>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="app">
+    <div class="app__content">
+        <div id="work-area">
+            <h1 class="cal__title">Birthday Cal</h1>
+            <ul class="calendar clearfix js-calendar" id="calendar-area">
+                <li class="cal__day" data-day="mon">
+                    <div class="day__date"></div>
+                    <div class="day__people"></div>
+                </li>
+                <li class="cal__day" data-day="tue">
+                    <div class="day__date"></div>
+                    <div class="day__people">
+                    </div>
+                </li>
+                <li class="cal__day" data-day="wed">
+                    <div class="day__date"></div>
+                    <div class="day__people"></div>
+                </li>
+                <li class="cal__day" data-day="thu">
+                    <div class="day__date"></div>
+                    <div class="day__people"></div>
+                </li>
+                <li class="cal__day" data-day="fri">
+                    <div class="day__date"></div>
+                    <div class="day__people"></div>
+                </li>
+                <li class="cal__day" data-day="sat">
+                    <div class="day__date"></div>
+                    <div class="day__people"></div>
+                </li>
+                <li class="cal__day" data-day="sun">
+                    <div class="day__date"></div>
+                    <div class="day__people"></div>
+                </li>
+            </ul>
+            <div class="app__inputs">
+                <textarea class="app__txt js-json" id="json-input"
+                          placeholder="Paste your friends list json here."></textarea>
+
+                <div class="app__actions">
+                    <label>Year</label>
+                    <input class="app__input js-year" id="year-input" type="text" value="" placeholder="yyyy"/>
+                    <label class="error-msg" id="error-msg-label"></label>
+                    <a class="app__button js-update" id="update-button">Update</a>
+                </div>
+            </div>
+        </div>
+        <hr class="border-line app__border"/>
+    </div>
+</div>
+<script src="js/BirthdayCal.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

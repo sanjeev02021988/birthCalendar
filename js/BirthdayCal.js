@@ -1,9 +1,9 @@
 //This class is a singleton class. This class exposes API which only processes the data and using the processed data updates the DOM.
 var BirthdayCal = (function () {
-    var instance;
-    var workspaceObj;
+    var instance,
+        workspaceObj;
 
-    return function (id) {
+    return function () {
         if (instance) {
             return instance;
         }
@@ -22,20 +22,19 @@ var BirthdayCal = (function () {
 
     //This function process the data and categorize names if year filter is matched.
     function processData(birthdays, year) {
-        var i, j, date, birthdayObj, dayNamesMap = [], initials, day, currentYearDate, tempDate;
+        var date, dayNamesMap = [], initials, day, currentYearDate;
         currentYearDate = new Date(year);
-        for (i = 0; i < birthdays.length; i++) {
-            birthdayObj = birthdays[i];
+        birthdays.forEach(function(birthdayObj){
             //Generating date out of birthday string.
             date = new Date(birthdayObj.birthday);
             if (isNaN(date.getDate())) {
                 if (birthdayObj.name) {
-                    console.log(birthdayObj.name + " has invalid birthday!!!");
+                    console.log(birthdayObj.name + " " + CONSTANTS.ERRORS.INVALID_BIRTH_DATE);
                 }
-                continue;
+                return;
             }
             if (year <= date.getFullYear()) {
-                continue;
+                return;
             }
             currentYearDate.setMonth(date.getMonth());
             currentYearDate.setDate(date.getDate());
@@ -47,27 +46,25 @@ var BirthdayCal = (function () {
             //Getting initials out of the name.
             var splits = birthdayObj.name.split(" ");
             initials = "";
-            for (j = 0; j < splits.length; j++) {
-                if (splits[j]) {
-                    initials += splits[j][0];
-                }
-            }
+            splits.forEach(function(split) {
+                initials += split? split[0]: "";
+            });
             //Inserting the initials in sorted manner from youngest to oldest.
-            for (j = 0; j < dayNamesMap[day].length; j++) {
-                var dayNameObj = dayNamesMap[day][j];
+            for (var i = 0; i < dayNamesMap[day].length; i++) {
+                var dayNameObj = dayNamesMap[day][i];
                 if (date > dayNameObj.date) {
                     break;
                 }
             }
-            dayNamesMap[day].splice(j, 0, {initials: initials, date: date});
-        }
+            dayNamesMap[day].splice(i, 0, {initials: initials, date: date});
+        });
         return dayNamesMap;
     }
 
     //This function updates cards html for the processed data.
     function updateWeeklyCards(dayNamesMap) {
         var calDays, calDay, calDayPeople, htmlStr = "", namesArray,
-            squaresPerRow, sideLength, i, j;
+            squaresPerRow, sideLength, i;
         calDays = workspaceObj.getElementsByClassName("cal__day");
         for (i = 0; i < calDays.length; i++) {
             calDay = calDays[i];
@@ -86,12 +83,12 @@ var BirthdayCal = (function () {
                 squaresPerRow = (parseInt(squaresPerRow) !== squaresPerRow) ? parseInt(squaresPerRow) + 1 : squaresPerRow;
                 //Getting dimensions of a square
                 sideLength = calDayPeople.clientWidth / squaresPerRow;
-                for (j = 0; j < namesArray.length; j++) {
+                namesArray.forEach(function(name){
                     //Creating html for each square for a weekday
                     htmlStr += "<div class='day__person' style='width:" + sideLength + "px;height:" + sideLength + "px;'>";
-                    htmlStr += namesArray[j].initials;
+                    htmlStr += name.initials;
                     htmlStr += "</div>";
-                }
+                });
                 calDayPeople.innerHTML = htmlStr;
             }
         }

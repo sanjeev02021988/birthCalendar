@@ -1,43 +1,62 @@
-var birthdayCalObj = null;
+//Global variables.
+//variable birthdayCalObj will contain object of BirthdayCal class.
+var birthdayCalObj = null,
+//variable errorBoxObj will contain object of Error class.
+    errorBoxObj = null;
+
+//This IIFE will contain all initialization code of the application.
 (function init() {
-    document.getElementById("update-button").addEventListener("click", updateCalendar);
+    var updateButtonObj = document.getElementById("update-button");
+    if (updateButtonObj !== null) {
+        document.getElementById("update-button").addEventListener("click", updateCalendar);
+    }
     birthdayCalObj = new BirthdayCal();
+    //Creating Error class object: Passing is of a label, which will be used use for showing error messages.
+    errorBoxObj = new Error("error-msg-label");
 })();
 
+//This function will be called when user clicks update button.
 function updateCalendar() {
-    var year, jsonString, errorBoxObj, yearInputObj, textAreaObj;
+    var yearInputObj, textAreaObj, year, jsonString;
+    //Validating year input.
     yearInputObj = document.getElementById("year-input");
-    errorBoxObj = document.getElementById("error-msg-label");
-    errorBoxObj.innerHTML = "";
-    if (yearInputObj) {
+    if (yearInputObj !== null) {
         year = yearInputObj.value;
-        yearInputObj.className = "app__input js-year";
-        if (year % 1 !== 0) {
-            yearInputObj.className += " error";
-            errorBoxObj.innerHTML = "Invalid Date...";
+        //Removing error class from year input.
+        errorBoxObj.clearErrorMsg(yearInputObj);
+        //Checking if the year entered is a 4 digit number or not.
+        if (!/^[0-9]{4}$/.test(year)) {
+            //If the entered year fails the test, then highlight the input in red and show error msg.
+            errorBoxObj.setErrorMsg(yearInputObj, CONSTANTS.ERRORS.INVALID_DATE);
             return;
         }
     }
+    //Validating text area input.
     textAreaObj = document.getElementById("json-input");
-    if (textAreaObj) {
-        jsonString = textAreaObj.value.replace(/\s\s+/g, ' ');
-    }
-    textAreaObj.className = "app__txt js-json";
-    try {
-        jsonString = JSON.parse(jsonString);
-    } catch (error) {
+    //Removing error class from text area input.
+    errorBoxObj.clearErrorMsg(textAreaObj);
+    if (textAreaObj !== null) {
+        jsonString = textAreaObj.value;
+        //Parsing json string using JSON.parse.
         try {
-            jsonString = eval(jsonString);
-            if (!Array.isArray(jsonString)) {
-                textAreaObj.className += " error";
-                errorBoxObj.innerHTML = "Not a JSON array...";
+            jsonString = JSON.parse(jsonString);
+        } catch (error) {
+            //If Parsing using JSON.parse if failed the use eval.
+            try {
+                jsonString = eval(jsonString);
+            } catch (error) {
+                //If parsing is failed using eval then set errorMsg and highlight the test area.
+                errorBoxObj.setErrorMsg(textAreaObj, CONSTANTS.ERRORS.INVALID_JSON_ARRAY);
                 return;
             }
-        } catch (error) {
-            textAreaObj.className += " error";
-            errorBoxObj.innerHTML = "Invalid JSON...";
-            return;
+        } finally {
+            //Checks if the parsed string is not an Array then set errorMsg and highlight the test area.
+            if (!Array.isArray(jsonString)) {
+                errorBoxObj.setErrorMsg(textAreaObj, CONSTANTS.ERRORS.INVALID_JSON_ARRAY);
+                return;
+            }
         }
     }
+    //If all inputs are valid then update the cards.
     birthdayCalObj.updateCards("calendar-area", jsonString, year);
 }
